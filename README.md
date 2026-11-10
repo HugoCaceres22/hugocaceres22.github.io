@@ -7,6 +7,6 @@ La página tiene dos formas de explorar el contenido:
 - **Portfolio clásico:** una presentación con mis proyectos, conocimientos, formación, experiencia y formas de contacto.
 - **Habitación interactiva:** mi setup en 3D, donde cada objeto abre una parte de mi historia. En el ordenador están los proyectos; en el mural, más sobre mí; en los libros, mi formación, certificaciones y experiencia; y en la mesa de encantamientos, Minecraft Enchanting Tool.
 
-También puedes consultar mi currículum, acceder al código y la documentación de los proyectos y encontrar mis enlaces de contacto. La habitación incluye recorridos de cámara y animaciones para pasar de un apartado a otro.
+También puedes consultar mi currículum, acceder al código y la documentación de los proyectos y encontrar mis enlaces de contacto. La habitación incluye recorridos de cámara y animaciones para pasar de un apartado a otro. En la portada, los textos y títulos aparecen con animaciones la primera vez que los ves y se quedan colocados al volver a subir.
 
 La iré ampliando con nuevos proyectos, experiencias y mejoras. La idea es que esta página crezca conmigo y refleje lo que voy haciendo.

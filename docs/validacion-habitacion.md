@@ -69,3 +69,17 @@ Se corrigió el flujo de entrada y salida para mantener el área de renderizado 
 - Imagen real cargada y encuadrada; la imagen y el botón abren `/room/`. Comprobados ambos accesos en navegador, sin errores de consola.
 - Comprobado a 1200 px y 390 px: en móvil pasa a una columna, con imagen y botón dentro de la tarjeta, sin desbordamiento horizontal.
 - Compilación de producción completada y comprobación de espacios de Git sin errores.
+
+### Texto y libro de encantamientos — 10 de noviembre de 2026
+- Las superficies alineadas con la cámara se colocan con left/top ajustados a píxeles físicos y sin matriz de transformación. El tamaño se ajusta al píxel físico más cercano. Se eliminan las capas de opacidad al finalizar el recorrido.
+- Textos de las fichas con mayor tamaño, peso y contraste. Comprobadas las cinco fichas: 388 px visibles y 388 px de contenido, sin desbordamiento. Verificado en navegador que la superficie estable no tiene transformaciones y usa will-change: auto.
+- Libro con bisagras para tapas y bloques de páginas, escritura de glifos, balanceo, giro suave hacia el puntero y dos hojas que pasan periódicamente. Al abrir el grimorio, el movimiento ambiental se retira y se conserva la navegación de páginas.
+- Animación ambiental activa inicialmente con controles de pausa y reanudación; comprobados ambos controles. Comprobados acercamiento, cambio de página y regreso a la habitación, sin errores de consola.
+- Compilación de producción completada correctamente.
+
+### Animaciones de primera aparición en la portada — 10 de noviembre de 2026
+- Títulos, párrafos, etiquetas, enlaces, diagramas y contenido desplegable aparecen por separado, con un pequeño escalonado al entrar en pantalla.
+- Cada elemento deja de observarse al comenzar su primera entrada. Al terminar se retira la animación y su capa de composición; permanece visible y sin transformaciones al volver a subir.
+- Verificado en navegador: el título de formación pasó por el estado entering (opacidad 0,424 y desplazamiento de 6,9 px) y después shown. Al volver a perfil, su título seguía shown, opacidad 1 y transform none, sin repetir la entrada.
+- Verificado el contenido desplegable de un proyecto, el acceso por teclado y el diseño a 390 px sin desbordamiento horizontal. Los elementos enfocados se muestran inmediatamente. El movimiento reducido del sistema usa entradas más cortas y sin giro.
+- Compilación de producción correcta y sin errores de consola durante la comprobación.

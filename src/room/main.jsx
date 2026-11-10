@@ -8,7 +8,7 @@ import './room.css';
 
 function Room(){
  const stage=useRef(null),scene=useRef(null),lastFocus=useRef(null),activeRef=useRef(null);
- const [ready,setReady]=useState(false),[error,setError]=useState(''),[active,setActive]=useState(null),[phase,setPhase]=useState('overview'),[motion,setMotion]=useState(true),[surfaces,setSurfaces]=useState({}),[busy,setBusy]=useState(false),[reading,setReading]=useState(false),[bookIndex,setBookIndex]=useState(0),[labels,setLabels]=useState(true),[paused,setPaused]=useState(matchMedia('(prefers-reduced-motion: reduce)').matches),[help,setHelp]=useState(true);
+ const [ready,setReady]=useState(false),[error,setError]=useState(''),[active,setActive]=useState(null),[phase,setPhase]=useState('overview'),[motion,setMotion]=useState(true),[surfaces,setSurfaces]=useState({}),[busy,setBusy]=useState(false),[reading,setReading]=useState(false),[bookIndex,setBookIndex]=useState(0),[labels,setLabels]=useState(true),[paused,setPaused]=useState(false),[help,setHelp]=useState(true);
  const activeStation=stations.find(s=>s.id===active);
  function open(id,index){
   if(!activeRef.current)lastFocus.current=document.activeElement;

@@ -31,3 +31,11 @@
 @media(min-width:761px){.room-main,.exploring .room-main{height:calc(100svh - 282px);min-height:0}.station-nav>button>span:not(.nav-icon):not(.nav-arrow){white-space:nowrap}}
 /* Compact the introduction on shorter desktop screens to give the room space. */
 @media(min-width:761px) and (max-height:850px){.room-intro{top:24px}.room-intro h1{font-size:clamp(40px,4vw,64px);margin:18px 0 16px}.room-intro p{font-size:13px;line-height:1.7}.intro-rule{margin:16px 0 13px}.coordinates{margin-top:18px}}
+/* Settled text uses normal painting, without an opacity or transform texture. */
+.world-sharp>.world-surface[data-active="true"]{will-change:auto!important;transition:none!important;opacity:1}
+.world-sharp .library-reading p{font-weight:500;color:#c0cddd}
+.world-sharp .has-project-open .library-reading p{font-size:16px;line-height:1.5;color:#c0cddd}
+.world-sharp .has-project-open .library-reading .library-summary{font-size:17px;color:#eef3fa}
+.world-sharp .has-project-open .library-reading h2{font-size:29px;font-weight:600}
+.world-sharp .has-project-open .library-reading h3{font-size:14px;font-weight:600;color:#e0eaf2}
+.world-sharp .has-project-open .experience-tags span{font-size:11px}

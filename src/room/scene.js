@@ -43,7 +43,7 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
   const focused=element.contains(document.activeElement)?document.activeElement:null;
   element.style.zoom='';element.style.transform=transform;parent.append(element);
   focused?.focus({preventScroll:true});
-  sharpSurface=null;sharpLayer.style.transform='';
+  sharpSurface=null;sharpLayer.style.transform='';sharpLayer.style.left='0px';sharpLayer.style.top='0px';
  }
  function sharpenSurface(id){
   const object=surfaceObjects[id],element=surfaceElements[id];if(!object||!element)return;
@@ -52,10 +52,14 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
   const point=(x,y)=>{const p=new THREE.Vector3(x,y,0).applyMatrix4(object.matrixWorld).project(camera);return new THREE.Vector2((p.x+1)*container.clientWidth/2,(1-p.y)*container.clientHeight/2)};
   const origin=point(-w/2,h/2),right=point(w/2,h/2),bottom=point(-w/2,-h/2);
   const a=(right.x-origin.x)/w,b=(right.y-origin.y)/w,c=(bottom.x-origin.x)/h,d=(bottom.y-origin.y)/h;
-  const zoom=Math.hypot(a,b);if(!zoom)return;
+  const density=window.devicePixelRatio||1;
+  const zoom=Math.round(Math.hypot(a,b)*w*density)/(w*density);if(!zoom)return;
   sharpSurface={element,parent:element.parentElement,transform:element.style.transform};
   const focused=element.contains(document.activeElement)?document.activeElement:null;
-  sharpLayer.style.transform=`matrix(${a/zoom},${b/zoom},${c/zoom},${d/zoom},${origin.x},${origin.y})`;
+  sharpLayer.style.left=(Math.round(origin.x*density)/density)+'px';
+  sharpLayer.style.top=(Math.round(origin.y*density)/density)+'px';
+  const aligned=Math.abs(b)<.00001&&Math.abs(c)<.00001;
+  sharpLayer.style.transform=aligned?'none':`matrix(${a/zoom},${b/zoom},${c/zoom},${d/zoom},0,0)`;
   element.style.transform='none';element.style.zoom=String(zoom);sharpLayer.append(element);
   focused?.focus({preventScroll:true});
  }
@@ -189,11 +193,15 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
  for(const z of [.46,1.54])box(.7,.035,.035,0xc89f54,2.65,.8,z,minecraft,0,.001);
  for(const x of [2.11,3.19])box(.035,.035,.7,0xc89f54,x,.8,1,minecraft,0,.001);
  const book=new THREE.Group();book.position.set(2.65,1.15,1);book.rotation.y=.2;minecraft.add(book);
- const left=box(.33,.055,.42,0xc9bd99,-.16,0,0,book);left.rotation.z=-.2;const right=box(.33,.055,.42,0xe1d7b7,.16,0,0,book);right.rotation.z=.2;
+ const leftHinge=new THREE.Group(),rightHinge=new THREE.Group();book.add(leftHinge,rightHinge);
+ const left=box(.33,.055,.42,0xc9bd99,-.16,0,0,leftHinge);const right=box(.33,.055,.42,0xe1d7b7,.16,0,0,rightHinge);
+ const printedPage=texture(64,96,ctx=>{ctx.fillStyle='#e1d7b7';ctx.fillRect(0,0,64,96);for(let row=0;row<8;row++)for(let col=0;col<5;col++){const x=7+col*10,y=9+row*10;ctx.fillStyle=(row+col)%5===0?'#a18d50':'#6b6251';ctx.fillRect(x,y,2,6);ctx.fillRect(x,y+(row%3)*2,6,2);if((row+col)%2)ctx.fillRect(x+4,y+2,2,4)}});printedPage.magFilter=THREE.NearestFilter;
+ for(const [x,hinge] of [[-.16,leftHinge],[.16,rightHinge]]){const ink=imagePlane(printedPage,.28,.36,x,.03,0,hinge);ink.rotation.x=-Math.PI/2}
  box(.055,.055,.46,0x62382a,0,-.045,0,book,0,.001);
- for(const x of [-.17,.17]){box(.34,.026,.46,0x8c4533,x,-.036,0,book,0,.001);for(const z of [-.2,.2])box(.055,.012,.045,0xc7a359,x+Math.sign(x)*.12,-.016,z,book,0,.001)}
+ for(const x of [-.17,.17]){const hinge=x<0?leftHinge:rightHinge;box(.34,.026,.46,0x8c4533,x,-.036,0,hinge,0,.001);for(const z of [-.2,.2])box(.055,.012,.045,0xc7a359,x+Math.sign(x)*.12,-.016,z,hinge,0,.001)}
  surface('minecraft',1000,640,.00062,[0,.036,0],book,[-Math.PI/2,0,0]);
  const turnLeaf=new THREE.Group();turnLeaf.position.set(0,.045,0);book.add(turnLeaf);box(.3,.006,.4,0xf1deb3,.15,0,0,turnLeaf);turnLeaf.visible=false;
+ const idleLeaves=[0,1].map(i=>{const leaf=new THREE.Group();leaf.position.y=.043+i*.008;box(.3,.004,.39,i?0xd9caa4:0xf1deb3,.15,0,0,leaf,0,.001);const ink=imagePlane(printedPage,.27,.35,.15,.004,0,leaf);ink.rotation.x=-Math.PI/2;book.add(leaf);return leaf});
  const diamond=new THREE.Mesh(new THREE.OctahedronGeometry(.1),material(0x9eb9ae,.2));diamond.position.set(3.1,1.4,1);diamond.visible=false;minecraft.add(diamond);
  // Small grey, pixel-built runes rise from the book while the room is in overview.
  const runeCloud=new THREE.Group();runeCloud.userData.station='minecraft';root.add(runeCloud);
@@ -215,7 +223,7 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
  // Under-desk cable runs and small floor lights.
  line([[-2.1,1.4,-2.1],[-2.1,.65,-2.4],[-1.2,.2,-2.6],[1.55,.2,-2.5],[1.55,1.4,-2.1]],0x454d6d,.018);
  const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();
- let down=null,disposed=false,frameId,paused=false,activeId=null,flight=null,bookIndex=0,magicProgress=0,cvProgress=0,phoneProgress=0,turnStart=-100;
+ let down=null,disposed=false,frameId,paused=false,activeId=null,flight=null,bookIndex=0,magicProgress=0,cvProgress=0,phoneProgress=0,turnStart=-100,enchantLook=0,enchantLookTarget=0;
  const clock=new THREE.Clock();
  const educationDestination=new THREE.Vector3(-2.55,2.65,-.4);
  function showSurface(id,interactive=false){for(const [key,element] of Object.entries(surfaceElements)){element.dataset.active=String(key===id);element.dataset.interactive=String(key===id&&interactive);element.inert=!(key===id&&interactive)}}
@@ -266,7 +274,7 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
   const hits=ray.intersectObjects(root.children,true);
   for(const hit of hits){let o=hit.object;while(o){if(o.userData.station)return {id:o.userData.station,index:o.userData.bookIndex};o=o.parent}if(hit.object.material?.transparent)continue;return null}return null;
  }
- function pointerMove(e){renderer.domElement.style.cursor=pick(e)?'pointer':activeId?'default':'grab'}
+ function pointerMove(e){renderer.domElement.style.cursor=pick(e)?'pointer':activeId?'default':'grab';const rect=renderer.domElement.getBoundingClientRect();enchantLookTarget=THREE.MathUtils.clamp(((e.clientX-rect.left)/rect.width-.5)*.55,-.28,.28)}
  function pointerDown(e){down=[e.clientX,e.clientY]}
  function pointerUp(e){if(down&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<6){const result=pick(e);if(result)onOpen(result.id,result.index)}down=null}
  renderer.domElement.addEventListener('pointermove',pointerMove);renderer.domElement.addEventListener('pointerdown',pointerDown);renderer.domElement.addEventListener('pointerup',pointerUp);
@@ -288,8 +296,11 @@ export function createRoom(container,{onOpen,onReady,onError,onFocused,onBookCha
   cvProgress=flight?THREE.MathUtils.lerp(flight.propFrom.cv,activeId==='cv'?1:0,propEase):THREE.MathUtils.lerp(cvProgress,activeId==='cv'?1:0,reduced.matches?1:smooth);
   phoneProgress=flight?THREE.MathUtils.lerp(flight.propFrom.phone,activeId==='contact'?1:0,propEase):THREE.MathUtils.lerp(phoneProgress,activeId==='contact'?1:0,reduced.matches?1:smooth);
   book.position.set(2.65,THREE.MathUtils.lerp(1.15,2.35,magicProgress)+Math.sin(elapsed*1.5)*.045*(1-magicProgress),1);
-  book.rotation.set(Math.PI/2*magicProgress,.2*(1-magicProgress),0);book.scale.setScalar(1+2.8*magicProgress);
-  left.rotation.z=-.2*(1-magicProgress);right.rotation.z=.2*(1-magicProgress);
+  const idle=1-magicProgress;
+  if(!paused&&!reduced.matches)enchantLook=THREE.MathUtils.lerp(enchantLook,enchantLookTarget,smooth);
+  book.rotation.set(Math.PI/2*magicProgress+Math.sin(elapsed*.85)*.045*idle,(.2+Math.sin(elapsed*.55)*.13+enchantLook)*idle,Math.sin(elapsed*.7)*.035*idle);book.scale.setScalar(1+2.8*magicProgress);
+  leftHinge.rotation.z=-(.2+Math.sin(elapsed*1.3)*.065)*idle;rightHinge.rotation.z=(.2+Math.sin(elapsed*1.3+.7)*.065)*idle;
+  for(let i=0;i<idleLeaves.length;i++){const cycle=(elapsed+i*.17)%4.2;idleLeaves[i].visible=idle>.98&&!activeId&&cycle<.95;idleLeaves[i].rotation.z=Math.PI*THREE.MathUtils.smoothstep(cycle,0,.95)}
   runeCloud.visible=!activeId&&!flight;
   for(let i=0;i<runeSprites.length;i++){const life=(elapsed*.3+i/runeSprites.length)%1,angle=i*2.399+life*.45,radius=.06+life*.4;const rune=runeSprites[i];rune.position.set(2.65+Math.cos(angle)*radius,1.18+life*.85,1+Math.sin(angle)*radius);rune.material.opacity=Math.sin(life*Math.PI)*.55;rune.material.rotation=Math.sin(elapsed*.3+i)*.12}
   const pageProgress=(now-turnStart)/.7;turnLeaf.visible=activeId==='minecraft'&&pageProgress>=0&&pageProgress<1;turnLeaf.rotation.z=-Math.PI*Math.max(0,Math.min(1,pageProgress));
