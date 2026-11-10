@@ -63,3 +63,9 @@ Se corrigió el flujo de entrada y salida para mantener el área de renderizado 
 - El encuadre se recalcula al cambiar de tamaño y al volver a la vista general. Los acercamientos a los objetos y sus superficies de lectura conservan su encuadre.
 - Ajustada la introducción en escritorios de poca altura para que no invada los accesos inferiores.
 - Comprobados entrada al monitor y regreso con animación completa, y compilación de producción sin errores.
+
+### Acceso integrado bajo el nombre — 10 de noviembre de 2026
+- La tarjeta de entrada es el elemento inmediatamente posterior al h1 de la portada y existe una sola vez.
+- Imagen real cargada y encuadrada; la imagen y el botón abren `/room/`. Comprobados ambos accesos en navegador, sin errores de consola.
+- Comprobado a 1200 px y 390 px: en móvil pasa a una columna, con imagen y botón dentro de la tarjeta, sin desbordamiento horizontal.
+- Compilación de producción completada y comprobación de espacios de Git sin errores.
