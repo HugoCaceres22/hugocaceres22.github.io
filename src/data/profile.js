@@ -1,6 +1,6 @@
 export const profile = {
   name: 'Hugo Cáceres', fullName: 'Hugo Cáceres Martín',
-  github: 'https://github.com/HugoCaceres22', email: 'hugocaceresmartin@gmail.com', linkedin: '', cv: '',
+  github: 'https://github.com/HugoCaceres22', email: 'hugocaceresmartin@gmail.com', linkedin: '', cv: '/cv.pdf',
   intro: 'Aprendo informática construyendo entornos, automatizando tareas y entendiendo cómo se conectan las piezas.',
   about: 'Mi trabajo se centra en sistemas, redes y automatización. Me interesa desplegar un entorno, comprender qué sucede cuando algo falla y documentar una solución que pueda repetir. También exploro el tratamiento de datos y el aprendizaje automático desde la práctica.',
   education: [
